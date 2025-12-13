@@ -23,23 +23,23 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_URL} ."
+                sh 'docker build -t ${IMAGE_URL} .'
             }
         }
 
         stage('Login to Artifact Registry') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-json', variable: 'GCP_KEY')]) {
-                    sh """
-                    cat \$GCP_KEY | docker login -u _json_key --password-stdin https://${REGION}-docker.pkg.dev
-                    """
+                    sh '''
+                    cat "$GCP_KEY" | docker login -u _json_key --password-stdin https://asia-south1-docker.pkg.dev
+                    '''
                 }
             }
         }
 
         stage('Push Image') {
             steps {
-                sh "docker push ${IMAGE_URL}"
+                sh 'docker push ${IMAGE_URL}'
             }
         }
 
@@ -53,21 +53,21 @@ pipeline {
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_TOKEN'
                 )]) {
-                    sh """
+                    sh '''
                     rm -rf gitops
-                    git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/ishan706045-design/charts.git gitops
+                    git clone https://$GIT_USER:$GIT_TOKEN@github.com/ishan706045-design/charts.git gitops
                     cd gitops
 
-                    # yq v3 FIX (note -y)
-                    yq w -y -i values-staging.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"
-                    yq w -y -i values-staging.yaml image.tag "${TAG}"
+                    yq w values-staging.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}" > values-staging.tmp.yaml
+                    yq w values-staging.tmp.yaml image.tag "${TAG}" > values-staging.yaml
+                    rm -f values-staging.tmp.yaml
 
                     git config user.email "jenkins@ci"
                     git config user.name "jenkins"
 
                     git diff --quiet || git commit -am "staging: update image to ${TAG}"
                     git push
-                    """
+                    '''
                 }
             }
         }
@@ -80,21 +80,21 @@ pipeline {
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_TOKEN'
                 )]) {
-                    sh """
+                    sh '''
                     rm -rf gitops
-                    git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/ishan706045-design/charts.git gitops
+                    git clone https://$GIT_USER:$GIT_TOKEN@github.com/ishan706045-design/charts.git gitops
                     cd gitops
 
-                    # yq v3 FIX (note -y)
-                    yq w -y -i values-production.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"
-                    yq w -y -i values-production.yaml image.tag "${TAG}"
+                    yq w values-production.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}" > values-production.tmp.yaml
+                    yq w values-production.tmp.yaml image.tag "${TAG}" > values-production.yaml
+                    rm -f values-production.tmp.yaml
 
                     git config user.email "jenkins@ci"
                     git config user.name "jenkins"
 
                     git diff --quiet || git commit -am "prod: update image to ${TAG}"
                     git push
-                    """
+                    '''
                 }
             }
         }
