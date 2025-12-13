@@ -6,13 +6,16 @@ pipeline {
         REGION = "asia-south1"
         REPO = "learning"
         IMAGE = "myapp"
+
         TAG = "${env.GIT_COMMIT.take(7)}"
-        IMAGE_URL = "${env.REGION}-docker.pkg.dev/${env.PROJECT_ID}/${env.REPO}/${env.IMAGE}:${env.TAG}"
+        IMAGE_URL = "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}:${TAG}"
+
+        GITOPS_REPO = "https://github.com/ishan706045-design/charts.git"
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout App Code') {
             steps {
                 checkout scm
             }
@@ -20,17 +23,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                docker build -t ${IMAGE_URL} .
-                """
+                sh "docker build -t ${IMAGE_URL} ."
             }
         }
 
-        stage('Login to Google Artifact Registry') {
+        stage('Login to Artifact Registry') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-json', variable: 'GCP_KEY')]) {
                     sh """
-                    cat $GCP_KEY | docker login -u _json_key --password-stdin https://${REGION}-docker.pkg.dev
+                    cat \$GCP_KEY | docker login -u _json_key --password-stdin https://${REGION}-docker.pkg.dev
                     """
                 }
             }
@@ -41,38 +42,58 @@ pipeline {
                 sh "docker push ${IMAGE_URL}"
             }
         }
-        
-        stage('Deploy to STAGING') {
-            when {
-                branch 'dev'
-            }
+
+        /* ================= UPDATE GITOPS ================= */
+
+        stage('Update STAGING image tag') {
+            when { branch 'dev' }
             steps {
-                sh """
-                helm upgrade --install myapp ./charts \
-                  --namespace staging \
-                  --create-namespace \
-                  -f charts/values-staging.yaml \
-                  --set image.repository=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE} \
-                  --set image.tag=${TAG}
-                """
+                withCredentials([usernamePassword(
+                    credentialsId: 'github-pat',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )]) {
+                    sh """
+                    rm -rf gitops
+                    git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/ishan706045-design/charts.git gitops
+                    cd gitops
+
+                    yq e -i '.image.repository="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"' values-staging.yaml
+                    yq e -i '.image.tag="${TAG}"' values-staging.yaml
+
+                    git config user.email "jenkins@ci"
+                    git config user.name "jenkins"
+
+                    git diff --quiet || git commit -am "staging: update image to ${TAG}"
+                    git push
+                    """
+                }
             }
         }
 
-        /* ================= PRODUCTION ================= */
-        stage('Deploy to PRODUCTION') {
-            when {
-                branch 'main'
-            }
+        stage('Update PRODUCTION image tag') {
+            when { branch 'main' }
             steps {
-                input message: "Approve PRODUCTION deployment?"
-                sh """
-                helm upgrade --install myapp ./charts \
-                  --namespace production \
-                  --create-namespace \
-                  -f charts/values-production.yaml \
-                  --set image.repository=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE} \
-                  --set image.tag=${TAG}
-                """
+                withCredentials([usernamePassword(
+                    credentialsId: 'github-pat',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )]) {
+                    sh """
+                    rm -rf gitops
+                    git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/ishan706045-design/charts.git gitops
+                    cd gitops
+
+                    yq e -i '.image.repository="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"' values-production.yaml
+                    yq e -i '.image.tag="${TAG}"' values-production.yaml
+
+                    git config user.email "jenkins@ci"
+                    git config user.name "jenkins"
+
+                    git diff --quiet || git commit -am "prod: update image to ${TAG}"
+                    git push
+                    """
+                }
             }
         }
     }
