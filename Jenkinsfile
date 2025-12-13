@@ -58,9 +58,9 @@ pipeline {
                     git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/ishan706045-design/charts.git gitops
                     cd gitops
 
-                    # yq v3 syntax
-                    yq w -i values-staging.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"
-                    yq w -i values-staging.yaml image.tag "${TAG}"
+                    # yq v3 FIX (note -y)
+                    yq w -y -i values-staging.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"
+                    yq w -y -i values-staging.yaml image.tag "${TAG}"
 
                     git config user.email "jenkins@ci"
                     git config user.name "jenkins"
@@ -85,9 +85,9 @@ pipeline {
                     git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/ishan706045-design/charts.git gitops
                     cd gitops
 
-                    # yq v3 syntax
-                    yq w -i values-production.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"
-                    yq w -i values-production.yaml image.tag "${TAG}"
+                    # yq v3 FIX (note -y)
+                    yq w -y -i values-production.yaml image.repository "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}"
+                    yq w -y -i values-production.yaml image.tag "${TAG}"
 
                     git config user.email "jenkins@ci"
                     git config user.name "jenkins"
