@@ -281,8 +281,8 @@ app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
 
-app.get("/demo-route",(req,res)=>{
-    res.status(200).json({success:true,message:"Demo the CI/CD using Jenkins, Argo Cd and K8"})
+app.get("/new-change",(req,res)=>{
+    res.status(200).json({success:true,message:"Demo  CI/CD using Jenkins, Argo Cd and K8"})
 })
 
 app.get('/country/:name', async (req, res, next) => {
