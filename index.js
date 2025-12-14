@@ -281,14 +281,6 @@ app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
 
-app.get("/deploy-on-staging", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "CI/CD pipeline executed: dev -> staging deployment completed."
-  });
-});
-
-
 
 app.get('/country/:name', async (req, res, next) => {
   try {
@@ -299,6 +291,14 @@ app.get('/country/:name', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+
+app.get("/deploy-on-staging", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "CI/CD pipeline executed: dev - staging deployment completed."
+  });
 });
 
 
