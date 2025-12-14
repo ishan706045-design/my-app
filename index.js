@@ -277,7 +277,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.get("/demo-deploy-on-staging", (req, res) => {
+app.get("/dev-staging", (req, res) => {
   res.status(200).json({
     success: true,
     message: "CI/CD pipeline executed: dev -> staging deployment completed."
