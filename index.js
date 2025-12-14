@@ -290,6 +290,11 @@ app.get("/health",(req,res)=>{
 
 app.get("/demo-staging",(req,res)=>{
     res.status(200).json({success:true,message:"demo staging"})
+});
+
+
+app.get("/dev-changess",(req,res)=>{
+    res.status(200).json({success:true,message:"Changes on the dev branch for staging env"})
 })
 
 
