@@ -284,6 +284,9 @@ app.get("/health",(req,res)=>{
 app.get("/env3",((req,res)=>{
     res.status(200).json({success:true,env})
 }))
+app.get("/hello",((req,res)=>{
+    res.status(200).json({success:true,message:"hello"})
+}))
 
 app.get('/country/:name', async (req, res, next) => {
   try {
