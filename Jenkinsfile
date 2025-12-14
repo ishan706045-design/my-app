@@ -41,6 +41,62 @@ pipeline {
             }
         }
 
+
+stage('Update STAGING image tag') {
+    when { branch 'dev' }
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github-pat',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+        )]) {
+            sh '''
+            rm -rf gitops
+            git clone https://$GIT_USER:$GIT_TOKEN@github.com/ishan706045-design/charts.git gitops
+            cd gitops
+
+            yq -y -i '.image.repository = "asia-south1-docker.pkg.dev/learning-481011/learning/myapp"' values-staging.yaml
+            yq -y -i '.image.tag = "'${TAG}'"' values-staging.yaml
+
+            git config user.email "jenkins@ci"
+            git config user.name "jenkins"
+
+            git diff --quiet || git commit -am "staging: update image to ${TAG}"
+            git push
+            '''
+        }
+    }
+}
+
+
+
+stage('Update STAGING image tag') {
+    when { branch 'dev' }
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github-pat',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+        )]) {
+            sh '''
+            rm -rf gitops
+            git clone https://$GIT_USER:$GIT_TOKEN@github.com/ishan706045-design/charts.git gitops
+            cd gitops
+
+            yq -y -i '.image.repository = "asia-south1-docker.pkg.dev/learning-481011/learning/myapp"' values-staging.yaml
+            yq -y -i '.image.tag = "'${TAG}'"' values-staging.yaml
+
+            git config user.email "jenkins@ci"
+            git config user.name "jenkins"
+
+            git diff --quiet || git commit -am "staging: update image to ${TAG}"
+            git push
+            '''
+        }
+    }
+}
+
+
        stage('Update GitOps image tag') {
     when {
         anyOf {
