@@ -281,7 +281,7 @@ app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
 
-app.get("/env2",((req,res)=>{
+app.get("/env3",((req,res)=>{
     res.status(200).json({success:true,env})
 }))
 
