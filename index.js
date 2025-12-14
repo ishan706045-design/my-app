@@ -284,9 +284,126 @@ app.get("/health",(req,res)=>{
 app.get("/env3",((req,res)=>{
     res.status(200).json({success:true,env})
 }))
-app.get("/hello",((req,res)=>{
-    res.status(200).json({success:true,message:"hello"})
-}))
+app.get("/hello", (req, res) => {
+  res.status(200).send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2026 Power Pass</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0b0f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card-wrapper {
+      padding: 20px;
+    }
+
+    .power-card {
+      width: 360px;
+      height: 360px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      box-shadow:
+        0 0 30px rgba(0, 255, 255, 0.25),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      text-align: center;
+      padding: 24px;
+      position: relative;
+    }
+
+    .card-header {
+      font-size: 16px;
+      letter-spacing: 1px;
+      opacity: 0.9;
+      margin-bottom: 18px;
+    }
+
+    .power-icon {
+      font-size: 64px;
+      margin: 12px 0;
+    }
+
+    .power-title {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px rgba(0, 255, 255, 0.8);
+    }
+
+    .power-title span {
+      display: block;
+      font-size: 26px;
+      color: #00ffe0;
+    }
+
+    .given-by {
+      margin-top: 26px;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .activated {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .hashtag {
+      position: absolute;
+      bottom: 16px;
+      width: 100%;
+      left: 0;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card-wrapper">
+    <div class="power-card">
+      <div class="card-header">🎆 2026 POWER PASS 🎆</div>
+
+      <div class="power-icon">💪</div>
+
+      <div class="power-title">
+        DISCIPLINE
+        <span>BOOST</span>
+      </div>
+
+      <div class="given-by">
+        🎁 Given by <strong>Aayush</strong>
+      </div>
+
+      <div class="activated">
+        ✨ Activated for 2026
+      </div>
+
+      <div class="hashtag">
+        #NewYearPowerPass
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `);
+});
 
 app.get('/country/:name', async (req, res, next) => {
   try {
