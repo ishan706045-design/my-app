@@ -288,6 +288,11 @@ app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
 
+
+app.get("/demo-staging",(req,res)=>{
+    res.status(200).json({success:true,message:"demo staging"})
+});
+
 app.get('/country/:name', async (req, res, next) => {
   try {
     const name = encodeURIComponent(req.params.name);
@@ -298,11 +303,6 @@ app.get('/country/:name', async (req, res, next) => {
     next(err);
   }
 });
-
-app.get("/demo-staging",(req,res)=>{
-    res.status(200).json({success:true,message:"demo staging"})
-});
-
 
 app.listen(port,()=>{
     console.log(`app is listening on port ${process.env.PORT}`)
