@@ -288,6 +288,10 @@ app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
 
+app.get("/demo-staging",(req,res)=>{
+    res.status(200).json({success:true,message:"demo staging"})
+})
+
 
 app.get('/country/:name', async (req, res, next) => {
   try {
