@@ -284,7 +284,7 @@ app.get("/health",(req,res)=>{
 app.get("/deploy-on-staging", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "CI/CD pipeline executed: dev → staging deployment completed."
+    message: "CI/CD pipeline executed: dev -> staging deployment completed."
   });
 });
 
