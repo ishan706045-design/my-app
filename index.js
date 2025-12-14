@@ -288,16 +288,6 @@ app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
 
-app.get("/demo-staging",(req,res)=>{
-    res.status(200).json({success:true,message:"demo staging"})
-});
-
-
-app.get("/dev-changess",(req,res)=>{
-    res.status(200).json({success:true,message:"Changes on the dev branch for staging env"})
-})
-
-
 app.get('/country/:name', async (req, res, next) => {
   try {
     const name = encodeURIComponent(req.params.name);
@@ -307,6 +297,10 @@ app.get('/country/:name', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+app.get("/demo-staging",(req,res)=>{
+    res.status(200).json({success:true,message:"demo staging"})
 });
 
 
