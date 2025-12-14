@@ -7,13 +7,6 @@ const port = process.env.PORT ?? 3000;
 
 const env = process.env;
 
-app.get("/deploy-on-staging", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "CI/CD pipeline executed: dev -> staging deployment completed."
-  });
-});
-
 
 app.get("/", (req, res) => {
   res.send(`
@@ -284,13 +277,16 @@ app.get("/", (req, res) => {
   `);
 });
 
+app.get("/demo-deploy-on-staging", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "CI/CD pipeline executed: dev -> staging deployment completed."
+  });
+});
+
 app.get("/health",(req,res)=>{
     res.status(200).json({success:true,message:"app health was good"})
 })
-
-app.get("/demo-staging",(req,res)=>{
-    res.status(200).json({success:true,message:"demo staging"})
-});
 
 app.get('/country/:name', async (req, res, next) => {
   try {
